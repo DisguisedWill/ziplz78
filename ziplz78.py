@@ -63,7 +63,7 @@ class lz78:
     def decomprime(fEntrada, fSaida):
         return
 
-fEntrada = open("tp1.txt")
+fEntrada = open("exemplo2mb.txt")
 fSaida = open("testezip.zip", 'wb')
 compressor = lz78
 compressor.comprime(fEntrada, fSaida)
