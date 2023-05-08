@@ -1,6 +1,7 @@
 import numpy as np
 from trie import No
-        
+import sys
+
 class lz78:
     
     def comprime(fEntrada, fSaida):
@@ -48,6 +49,7 @@ class lz78:
             if not char:
                 break
             busca = trie.busca(string + char)
+            print(char)
             if busca != None:
                 string = string + char
             else:
@@ -59,11 +61,68 @@ class lz78:
                 trie.addPalavra(string + char, cod)
                 cod += 1
                 string = ''
-
+        
     def decomprime(fEntrada, fSaida):
+        
         return
 
-fEntrada = open("exemplo2mb.txt")
-fSaida = open("testezip.zip", 'wb')
-compressor = lz78
-compressor.comprime(fEntrada, fSaida)
+def erroEntrada():
+        print(f"Uso:\n {sys.argv[0]} -c <arquivo a ser comprimido>")
+        print(f"{sys.argv[1]} -x <arquivo a ser decomprimido>")
+
+def leEntrada():
+    fEntrada = None
+    try:
+        if sys.argv[1] == '-c':
+            fEntrada = open(sys.argv[2], 'r')
+        elif sys.argv[1] == '-x':
+            fEntrada = open(sys.argv[2], 'wb')
+    except:
+        print("Erro ao ler arquivo de entrada")
+    
+    print(sys.argv[2])
+    return fEntrada 
+
+def leSaida():
+    nomesaida = ""
+    if sys.argv[1] == '-c':
+        if len(sys.argv) == 3:
+            if "." in sys.argv[2]:
+                nomesaida = sys.argv[2].split(".")[0] + ".z78"
+            else:
+                nomesaida = sys.argv[2] + ".z78"
+        else:
+            nomesaida = sys.argv[3]
+    elif sys.argv[1] == '-x':
+        if len(sys.argv) == 3:
+            if "." in sys.argv[2]:
+                nomesaida = sys.argv[2].split(".")[0] + ".txt"
+            else:
+                nomesaida = sys.argv[2] + ".txt"
+        else:
+            nomesaida = sys.argv[3]
+    try:
+        if sys.argv[1] == '-c':
+            
+            fSaida = open(nomesaida, 'wb')
+            
+        elif sys.argv[1] == '-x':
+            fSaida = open(nomesaida, 'wb')
+    except:
+        print("Erro ao ler arquivo de saida")
+    return fSaida
+
+def main():
+    if (len(sys.argv) != 3 and len(sys.argv) != 4) or (sys.argv[1] != '-c' and sys.argv[1] != '-x'):
+        erroEntrada()
+        return -1
+    
+    fEntrada = leEntrada()
+    fSaida = leSaida()
+    print(fEntrada)
+    print(fSaida)
+    
+    compressor = lz78
+    compressor.comprime(fEntrada, fSaida)
+
+main()
