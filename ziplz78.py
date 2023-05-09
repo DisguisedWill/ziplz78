@@ -26,7 +26,7 @@ class lz78:
                 trie.addPalavra(string + char, cod)
                 cod += 1
                 string = ''
-
+        
         # Determina numero de bytes
         if counter <= 255:
             bytes = 1
@@ -52,20 +52,40 @@ class lz78:
             print(char)
             if busca != None:
                 string = string + char
+                print("X")
             else:
                 counter += 1
                 busca2 = trie.busca(string)
-                # print([busca2.to_bytes(bytes, 'big'), char])
                 fSaida.write(busca2.to_bytes(bytes, 'big'))
                 fSaida.write(char.encode('utf-8'))
                 trie.addPalavra(string + char, cod)
+                print(string + char)
                 cod += 1
                 string = ''
-        
+        fSaida.write(trie.busca(string).to_bytes(bytes, 'big'))
     def decomprime(fEntrada, fSaida):
+        string = ''
+        bytes = int.from_bytes(fEntrada.read(4), byteorder='big', signed=False)
+        dicionario = {0: ""}
+        cod = 1
+        counter = 0
+        while True:
+            valor = int.from_bytes(fEntrada.read(bytes), byteorder='big', signed=False)
+            char = fEntrada.read(1).decode('utf-8')
+            if not char:
+                if valor:
+                    busca = dicionario[valor]
+                    fSaida.write(busca + char)  
+                break
+            
+            busca = dicionario[valor]
+            fSaida.write(busca + char)           
+            dicionario[cod] = busca + char
+            cod += 1
         
-        return
-
+        
+        
+        
 def erroEntrada():
         print(f"Uso:\n {sys.argv[0]} -c <arquivo a ser comprimido>")
         print(f"{sys.argv[1]} -x <arquivo a ser decomprimido>")
@@ -76,7 +96,7 @@ def leEntrada():
         if sys.argv[1] == '-c':
             fEntrada = open(sys.argv[2], 'r')
         elif sys.argv[1] == '-x':
-            fEntrada = open(sys.argv[2], 'wb')
+            fEntrada = open(sys.argv[2], 'rb')
     except:
         print("Erro ao ler arquivo de entrada")
     
@@ -107,7 +127,7 @@ def leSaida():
             fSaida = open(nomesaida, 'wb')
             
         elif sys.argv[1] == '-x':
-            fSaida = open(nomesaida, 'wb')
+            fSaida = open(nomesaida, 'w')
     except:
         print("Erro ao ler arquivo de saida")
     return fSaida
@@ -123,6 +143,6 @@ def main():
     print(fSaida)
     
     compressor = lz78
-    compressor.comprime(fEntrada, fSaida)
+    compressor.decomprime(fEntrada, fSaida)
 
 main()

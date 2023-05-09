@@ -16,7 +16,17 @@ class No:
                     break
             else:
                 return None
-    
+
+    def buscaValor(self, valor):
+        if self.valor == valor or self.char == "":
+            for filho in self.filhos:
+                if filho.valor == valor:
+                    return self.valor + filho.buscaValor(valor)
+            else:
+                return ""
+        else:
+            return ""
+
     def addPalavra(self, str, n):
         if str == "":
             self.valor = n
