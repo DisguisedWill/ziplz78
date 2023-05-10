@@ -1,9 +1,10 @@
+#!/bin/python3
 import numpy as np
 from trie import No
 import sys
 
 class lz78:
-    
+
     def comprime(fEntrada, fSaida):
         string = ""
         trie = No(string, 0)
@@ -49,21 +50,20 @@ class lz78:
             if not char:
                 break
             busca = trie.busca(string + char)
-            print(char)
+            
             if busca != None:
                 string = string + char
-                print("X")
+                
             else:
                 counter += 1
                 busca2 = trie.busca(string)
                 fSaida.write(busca2.to_bytes(bytes, 'big'))
                 fSaida.write(char.encode('utf-8'))
                 trie.addPalavra(string + char, cod)
-                print(string + char)
                 cod += 1
                 string = ''
         fSaida.write(trie.busca(string).to_bytes(bytes, 'big'))
-    def decomprime(fEntrada, fSaida):
+    def descomprime(fEntrada, fSaida):
         string = ''
         bytes = int.from_bytes(fEntrada.read(4), byteorder='big', signed=False)
         dicionario = {0: ""}
@@ -71,7 +71,22 @@ class lz78:
         counter = 0
         while True:
             valor = int.from_bytes(fEntrada.read(bytes), byteorder='big', signed=False)
-            char = fEntrada.read(1).decode('utf-8')
+            
+            char = ''
+            byte = fEntrada.read(1)  # read one byte at a time
+            while byte != b'':
+                
+                try:
+                    char = byte.decode('utf-8')
+                    
+                    break  # stop reading after decoding one character
+                except UnicodeDecodeError:
+                    # the byte is not a complete character, continue reading
+                    byte += fEntrada.read(1)
+
+            
+            
+
             if not char:
                 if valor:
                     busca = dicionario[valor]
@@ -100,7 +115,7 @@ def leEntrada():
     except:
         print("Erro ao ler arquivo de entrada")
     
-    print(sys.argv[2])
+    
     return fEntrada 
 
 def leSaida():
@@ -108,7 +123,8 @@ def leSaida():
     if sys.argv[1] == '-c':
         if len(sys.argv) == 3:
             if "." in sys.argv[2]:
-                nomesaida = sys.argv[2].split(".")[0] + ".z78"
+                nomesaida = sys.argv[2].rsplit(".", 1)[-2] + ".z78"
+                
             else:
                 nomesaida = sys.argv[2] + ".z78"
         else:
@@ -116,7 +132,7 @@ def leSaida():
     elif sys.argv[1] == '-x':
         if len(sys.argv) == 3:
             if "." in sys.argv[2]:
-                nomesaida = sys.argv[2].split(".")[0] + ".txt"
+                nomesaida = sys.argv[2].rsplit(".", 1)[-2] + ".txt"
             else:
                 nomesaida = sys.argv[2] + ".txt"
         else:
@@ -130,6 +146,7 @@ def leSaida():
             fSaida = open(nomesaida, 'w')
     except:
         print("Erro ao ler arquivo de saida")
+        exit()
     return fSaida
 
 def main():
@@ -139,10 +156,13 @@ def main():
     
     fEntrada = leEntrada()
     fSaida = leSaida()
-    print(fEntrada)
-    print(fSaida)
     
     compressor = lz78
-    compressor.decomprime(fEntrada, fSaida)
+    if sys.argv[1] == '-c':
+        compressor.comprime(fEntrada, fSaida)
+    elif sys.argv[1] == '-x':
+        compressor.descomprime(fEntrada, fSaida)
+    else:
+        erroEntrada()
 
 main()
