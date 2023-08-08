@@ -44,7 +44,6 @@ class lz78:
         # Segunda passada:
         trie = No(string, 0)
         cod = 1
-        counter = 0
         while True:
             char = fEntrada.read(1)
             if not char:
@@ -55,7 +54,6 @@ class lz78:
                 string = string + char
                 
             else:
-                counter += 1
                 busca2 = trie.busca(string)
                 fSaida.write(busca2.to_bytes(bytes, 'big'))
                 fSaida.write(char.encode('utf-8'))
@@ -63,6 +61,8 @@ class lz78:
                 cod += 1
                 string = ''
         fSaida.write(trie.busca(string).to_bytes(bytes, 'big'))
+    
+    
     def descomprime(fEntrada, fSaida):
         string = ''
         bytes = int.from_bytes(fEntrada.read(4), byteorder='big', signed=False)
@@ -84,9 +84,6 @@ class lz78:
                     # the byte is not a complete character, continue reading
                     byte += fEntrada.read(1)
 
-            
-            
-
             if not char:
                 if valor:
                     busca = dicionario[valor]
@@ -102,8 +99,9 @@ class lz78:
         
         
 def erroEntrada():
-        print(f"Uso:\n {sys.argv[0]} -c <arquivo a ser comprimido>")
-        print(f"{sys.argv[1]} -x <arquivo a ser decomprimido>")
+        print(f"Uso:\n{sys.argv[0]} -c <arquivo a ser comprimido>")
+        print("Ou")
+        print(f"{sys.argv[0]} -x <arquivo a ser decomprimido>")
 
 def leEntrada():
     fEntrada = None
